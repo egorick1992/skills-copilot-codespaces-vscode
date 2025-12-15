@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  flight-bot:
+    build: .
+    container_name: flight-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Монтируем папку с базой данных
+      - ./data:/app/data
+      # Монтируем папку для логов
+      - ./logs:/app/logs
+      # Монтируем исходный код для разработки
+      - .:/app
+    command: python bot.py
+    networks:
+      - flight-network
+
+  flight-runner:
+    build: .
+    container_name: flight-runner
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - .:/app
+    command: python run.py
+    depends_on:
+      - flight-bot
+    networks:
+      - flight-network
+
+  flight-post-task:
+    build: .
+    container_name: flight-post-task
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - .:/app
+    networks:
+      - flight-network
+    # Запускаем bash для интерактивного использования
+    command: /bin/bash
+
+networks:
+  flight-network:
+    driver: bridge
+
+volumes:
+  database_data:
+    driver: local

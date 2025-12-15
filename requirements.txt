@@ -1,0 +1,6 @@
+aiogram==3.10.0
+python-dotenv==1.0.0
+sqlalchemy==2.0.25
+aiosqlite==0.20.0
+greenlet==3.0.3
+requests==2.31.0
